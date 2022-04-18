@@ -20,3 +20,5 @@ api = tweepy.API(authenticator)
 
 # updates my profile desription
 api.update_profile(description = 'Testing my Twitter bot')
+
+print('test')
