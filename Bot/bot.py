@@ -3,7 +3,7 @@ import tweepy
 import os
 
 #print (os.getcwd())
-os.chdir('/home/leon/Desktop/Code/Py/twitterBot')
+os.chdir('/home/leon/Desktop/Code/Python/Bot')
 
 file_name = 'twitt.txt'
 all_keys = open(file_name, 'r').read().splitlines()
@@ -22,3 +22,4 @@ api = tweepy.API(authenticator)
 api.update_profile(description = 'Testing my Twitter bot')
 
 print('test')
+print ("hello world")
