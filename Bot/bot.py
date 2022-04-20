@@ -1,9 +1,13 @@
-from httplib2 import Authentication
+#from httplib2 import Authentication
 import tweepy
 import os
 
-#print (os.getcwd())
-os.chdir('/home/leon/Desktop/Code/Python/Bot')
+
+# print (os.getcwd())
+
+# dir for PC
+path_PC = "C:/Users/Leon/Desktop/Code/GitHub/Python/Bot"
+os.chdir(path_PC)
 
 file_name = 'twitt.txt'
 all_keys = open(file_name, 'r').read().splitlines()
