@@ -1,5 +1,7 @@
 import os
 import asyncio
+import requests
+import json
 #create bot
 
 # imports discord lib and dotenv lib
@@ -15,8 +17,14 @@ intents.message_content = True
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-
 client = discord.Client(intents=intents)
+
+# func to pull quotes from website
+def get_quote():
+    response = requests.get("https://zenquotes.io/api/random")
+    json_data = json.loads(response.text)
+    quote = json_data[0]['q'] + ' - ' + json_data[0]['a']
+    return(quote)
 
 #lets discord server know bot has entered server
 @client.event
@@ -34,5 +42,10 @@ async def on_message(message):
     
     if message.content.startswith('$butt'):
         await message.channel.send('butt hehe')
+    
+    #inspire quote command
+    if message.content.startswith('$inspire'):
+        quote = get_quote()
+        await message.channel.send(quote)
     
 client.run(TOKEN)
