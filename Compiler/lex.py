@@ -6,6 +6,13 @@ class Token:
     def __init__(self, tokenText, tokenKind):
         self.text = tokenText
         self.kind = tokenKind
+        
+    @staticmethod
+    def checkIfKeyword(tokenText):
+        for kind in tokenType:
+            if kind.name == tokenText and kind.value >= 100 and kind.value < 200:
+                return kind
+        return None
 
 #enum for token types
 class tokenType(enum.Enum):
@@ -59,7 +66,9 @@ class Lexer:
     
     #return lookahead character
     def peek(self):
-        pass
+        if self.curPos + 1 >= len(self.source):
+            return '\0'
+        return self.source[self.curPos + 1]
     
     #Invalid token found, print error message and exit
     def abort(self, message):
@@ -72,13 +81,16 @@ class Lexer:
     
     #skip comments
     def skipComment(self):
-        pass
+        if self.curChar == '#':
+            while self.curChar != '\n':
+                self.nextChar()
     
     #return token
     def getToken(self):
-        token = None
         
         self.skipWhitespace()
+        self.skipComment()
+        token = None
         
         #checks for each token
         if self.curChar == '+':
@@ -93,6 +105,67 @@ class Lexer:
             token = Token(self.curChar, tokenType.EOF)
         elif self.curChar == '\n':
             token = Token(self.curChar, tokenType.NEWLINE)
+
+        elif self.curChar == '=':
+            # Check whether this token is = or ==
+            if self.peek() == '=':
+                lastChar = self.curChar
+                self.nextChar()
+                token = Token(lastChar + self.curChar, tokenType.EQEQ)
+            else:
+                token = Token(self.curChar, tokenType.EQ)
+        elif self.curChar == '>':
+            # Check whether this is token is > or >=
+            if self.peek() == '=':
+                lastChar = self.curChar
+                self.nextChar()
+                token = Token(lastChar + self.curChar, tokenType.GTEQ)
+            else:
+                token = Token(self.curChar, tokenType.GT)
+        elif self.curChar == '<':
+                # Check whether this is token is < or <=
+                if self.peek() == '=':
+                    lastChar = self.curChar
+                    self.nextChar()
+                    token = Token(lastChar + self.curChar, tokenType.LTEQ)
+                else:
+                    token = Token(self.curChar, tokenType.LT)
+        elif self.curChar == '!':
+            if self.peek() == '=':
+                lastChar = self.curChar
+                self.nextChar()
+                token = Token(lastChar + self.curChar, tokenType.NOTEQ)
+            else:
+                peek = self.peek()
+                if peek is None:
+                    peek = "EOF"
+                self.abort("Expected !=, got !" + peek)
+        
+        #checking for digits
+        elif self.curChar.isdigit():
+            startPos = self.curPos
+            while self.peek().isdigit():
+                self.nextChar()
+            if self.peek() == '.':
+                self.nextChar()
+                if not self.peek().isdigit():
+                    self.abort("Illegal character in number: " + self.peek())
+                while self.peek().isdigit():
+                    self.nextChar()
+            tokText = self.source[startPos : self.curPos + 1]
+            token = Token(tokText, tokenType.NUMBER)
+            
+        elif self.curChar.isalpha():
+            startPos = self.curPos
+            while self.peek().isalnum():
+                self.nextChar()
+                
+            tokText = self.source[startPos : self.curPos + 1]
+            keyword = Token.checkIfKeyword(tokText)
+            if keyword == None:
+                token = Token(tokText, tokenType.INDENT)
+            else:
+                token = Token(tokText, keyword)
         else:
             self.abort("Unknown token: " + self.curChar)
         

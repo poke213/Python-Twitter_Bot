@@ -15,7 +15,7 @@ intents.message_content = True
 
 # calls DISCORD_TOKEN to get discord token from .env file
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv('phin_key')
 
 client = discord.Client(intents=intents)
 
