@@ -1,1 +1,2 @@
 1. create script that notifs me to look away from screen every 25 mins
+2. chore and finance tracker bot for sophia and me

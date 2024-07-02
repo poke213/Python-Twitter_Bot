@@ -15,8 +15,8 @@ intents.message_content = True
 
 # calls DISCORD_TOKEN to get discord token from .env file
 load_dotenv()
-TOKEN = os.getenv('phin_key')
-
+token = os.environ.get('key', 'YOUR_DEFAULT_TOKEN_VALUE')
+print(token)
 client = discord.Client(intents=intents)
 
 # func to pull quotes from website
@@ -30,7 +30,8 @@ def get_quote():
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord')
-    
+
+
 # reads user input and will outputt hello
 @client.event
 async def on_message(message):
@@ -42,10 +43,13 @@ async def on_message(message):
     
     if message.content.startswith('$butt'):
         await message.channel.send('butt hehe')
+        
+    if message.content.startswith('$clear'):
+        await message.channel.purge(limit=100)
     
     #inspire quote command
     if message.content.startswith('$inspire'):
         quote = get_quote()
         await message.channel.send(quote)
-    
-client.run(TOKEN)
+
+client.run(token)
