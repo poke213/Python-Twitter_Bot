@@ -20,7 +20,6 @@ async def on_ready():
 # connects to sqlite3 database
 conn = sqlite3.connect('groceries.db')
 c = conn.cursor()
-c.execute('CREATE TABLE IF NOT EXISTS groceries (name TEXT, place TEXT, amount INTEGER)')
 
 #add transcation to database
 def add_transaction(name, place, amount):
@@ -31,30 +30,30 @@ def add_transaction(name, place, amount):
 def get_transactions(name):
     c.execute('SELECT * FROM groceries WHERE name=?', (name,))
     return c.fetchall()
-
+    
 # reads user input and will output hello
-@client.command()
-async def ping(ctx):
+@commands.command()
+async def ping(self, ctx):
     await ctx.send('Pong!')
 
 @ping.error
-async def ping_error(ctx, error):
+async def ping_error(self, ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('Please pass in all required arguments')
 
-#grocieries commands
-@client.command()
-async def add(ctx, name, place, amount):
+#groceries commands
+@commands.command()
+async def add(self, ctx, name, place, amount):
     add_transaction(name, place, amount)
     await ctx.send('added to list: ' + name + ' ' + place + ' ' + amount)
 
 @add.error
-async def add_error(ctx, error):
+async def add_error(self, ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('Please pass in all required arguments')
         
-@client.command()
-async def list(ctx, name):
+@commands.command()
+async def list(self, ctx, name):
     transactions = get_transactions(name)
     name_width = 15
     place_width = 40
@@ -71,27 +70,9 @@ async def list(ctx, name):
         response = "No transactions found"
     await ctx.send(response)
 
-# reads user input and will output hello
-@client.event
-async def on_message(message):
-    # checks if message is from bot
-    if message.author == client.user:
-        return
+@commands.command()
+async def clear(self, ctx, amount=100):
+    await ctx.message.channel.purge(limit=amount)
     
-    # hello
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-    
-    #butt
-    if message.content.startswith('$butt'):
-        await message.channel.send('butt hehe')
-    
-    # clears all chat    
-    if message.content.startswith('$clear'):
-        await message.channel.purge(limit=100)
-        
-    await client.process_commands(message)
-
-
-
+client.add_command(ping)
 client.run(token) # type: ignore
